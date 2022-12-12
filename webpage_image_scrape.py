@@ -6,14 +6,15 @@ This program will scrape a webpage for images using a search term and download t
 
 import requests
 import pandas as pd
-import get_image_links as gil
+import get_unsplash_links as splash
+import get_eso_official_links as eso
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 
 def search_and_download(search_term, number_images):
-    res = gil.get_image_urls(search_term, number_images)
+    res = splash.get_image_urls(search_term, number_images)
 
 
 def get_user_data():
@@ -22,4 +23,14 @@ def get_user_data():
     search_and_download(user_search, img_amount)
 
 
-get_user_data()
+def main(website):
+    if website == 1:
+        eso.get_image_urls()
+    else:
+        get_user_data()
+
+
+choice = int(input('1 for ESO, 2 for unsplash: '))
+
+main(choice)
+
