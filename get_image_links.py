@@ -2,21 +2,24 @@
 
 
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 import time
+
+driver = webdriver.Firefox()
 
 
 # query will be search term, max links will be the number of links the program collects
-def get_image_urls(query: str, max_urls: int, driver: webdriver, sleep_between_interactions: int = 1):
+def get_image_urls(query: str, max_urls: int, sleep_between_interactions: float = 3):
 
     def scroll_to_end(wd):
         wd.execute_script('window.scrollTo(0, document.body.scrollHeight);')
         time.sleep(sleep_between_interactions)
 
     # build url query for desired site
-    search_url = 'https://unsplash.com/s/photos/{s}'
+    search_url = f'https://unsplash.com/s/photos/{query}'
 
     # load the page
-    driver.get(search_url.format(s=query))
+    driver.get(search_url)
 
     image_urls = set()
     image_count = 0
@@ -24,6 +27,35 @@ def get_image_urls(query: str, max_urls: int, driver: webdriver, sleep_between_i
     while image_count < max_urls:
         scroll_to_end(driver)
 
+        # get image thumbnail results
+        image_results = driver.find_elements(By.CSS_SELECTOR, 'img.YVj9w')
+        number_results = len(image_results)
 
+        print(f'Found: {number_results} search results. Extracting links from {results_start}:{number_results}.')
 
+        for img in image_results:
+
+            # extract image urls
+            if img.get_attribute('src') and 'http' in img.get_attribute('src'):
+                image_urls.add(img.get_attribute('src'))
+                print(img.get_attribute('src'))
+
+            image_count = len(image_urls)
+
+            if len(image_urls) >= max_urls:
+                print(f'Found {len(image_urls)} image links, done.')
+                break
+
+        else:
+            print('Found: ', len(image_urls), ' image links, looking for more.')
+            time.sleep(30)
+            return
+            load_more = driver.find_elements(By.CSS_SELECTOR, '.CwMIr')
+            if load_more:
+                driver.execute_script('document.querySelector(".CwMIr").click();')
+
+        # move the result startpoint down
+        results_start = len(image_results)
+
+    return image_urls
 
