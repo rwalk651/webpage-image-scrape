@@ -35,17 +35,24 @@ def get_image_urls(sleep_between_interactions: float = 5):
 
         print(f'Found: {number_results} results. Extracting links from {results_start}:{number_results}.')
 
-        for img in thumbnail_results[results_start:number_results]:
+        for thumb in thumbnail_results[results_start:number_results]:
 
             try:
-                img.click()
+                thumb.click()
                 time.sleep(sleep_between_interactions)
+            except Exception:
+                continue
+
+            images = driver.find_elements(By.XPATH, '// a[contains(text(), "1920x1080")]')
+
+            for img in images:
+                # extract image urls
+                if img.get_attribute('href') and 'http' in img.get_attribute('href'):
+                    image_urls.add(img.get_attribute('src'))
+                    print(img.get_attribute('src'))
 
 
-            # extract image urls
-            if img.get_attribute('src') and 'http' in img.get_attribute('src'):
-                image_urls.add(img.get_attribute('src'))
-                print(img.get_attribute('src'))
+
 
             image_count = len(image_urls)
 
@@ -61,7 +68,7 @@ def get_image_urls(sleep_between_interactions: float = 5):
             if load_more:
                 driver.execute_script('document.querySelector(".CwMIr").click();')
 
-        # move the result startpoint down
+        # move the result start point down
         results_start = len(image_results)
 
     return image_urls
