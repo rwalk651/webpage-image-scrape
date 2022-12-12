@@ -20,10 +20,24 @@ def get_image_urls(sleep_between_interactions: float = 5):
 
     # load the page
     driver.get(url)
+    time.sleep(sleep_between_interactions)
+
+    if url != driver.current_url:
+        mon = driver.find_element(By.ID, 'month')
+        mon.send_keys('01')
+        time.sleep(1)
+
+        day = driver.find_element(By.ID, 'day')
+        day.send_keys('01')
+        time.sleep(1)
+
+        year = driver.find_element(By.ID, 'year')
+        year.send_keys('1980')
+        time.sleep(1)
 
     image_urls = set()
     # fetch 5 urls at a time, program does not remember place
-    link_max = 5
+    link_max = 2
     image_count = 0
     results_start = 0
     while image_count < link_max:
@@ -48,15 +62,12 @@ def get_image_urls(sleep_between_interactions: float = 5):
             for img in images:
                 # extract image urls
                 if img.get_attribute('href') and 'http' in img.get_attribute('href'):
-                    image_urls.add(img.get_attribute('src'))
-                    print(img.get_attribute('src'))
-
-
-
+                    image_urls.add(img.get_attribute('href'))
+                    print(img.get_attribute('href'))
 
             image_count = len(image_urls)
 
-            if len(image_urls) >= max_urls:
+            if len(image_urls) >= link_max:
                 print(f'Found {len(image_urls)} image links, done.')
                 break
 
@@ -64,12 +75,12 @@ def get_image_urls(sleep_between_interactions: float = 5):
             print('Found: ', len(image_urls), ' image links, looking for more.')
             time.sleep(30)
             return
-            load_more = driver.find_elements(By.CSS_SELECTOR, '.CwMIr')
-            if load_more:
-                driver.execute_script('document.querySelector(".CwMIr").click();')
+            # load_more = driver.find_elements(By.CSS_SELECTOR, '.CwMIr')
+            # if load_more:
+            # driver.execute_script('document.querySelector(".CwMIr").click();')
 
         # move the result start point down
-        results_start = len(image_results)
+        results_start = len(thumbnail_results)
 
     return image_urls
 

@@ -32,5 +32,7 @@ def main(website):
 
 choice = int(input('1 for ESO, 2 for unsplash: '))
 
-main(choice)
+if __name__ = '__main__':
+
+    main(choice)
 
