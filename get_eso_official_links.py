@@ -6,10 +6,9 @@ from selenium.webdriver.common.by import By
 from bs4 import *
 import time
 
-driver = webdriver.Firefox()
-
 
 def get_image_urls(sleep_between_interactions: float = 5):
+    driver = webdriver.Firefox()
 
     def scroll_to_end(wd):
         wd.execute_script('window.scrollTo(0, document.body.scrollHeight);')
@@ -84,3 +83,6 @@ def get_image_urls(sleep_between_interactions: float = 5):
 
     return image_urls
 
+
+if __name__ == '__main__':
+    get_image_urls()
