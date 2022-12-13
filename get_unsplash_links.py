@@ -1,4 +1,4 @@
-"""Get image urls from search query"""
+"""Get image urls from search query in Unsplash"""
 
 
 from selenium import webdriver

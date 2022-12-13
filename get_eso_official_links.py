@@ -3,6 +3,7 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from download_images import *
 import time
 
 sleep_between_interactions: int = 4
@@ -31,22 +32,24 @@ def main():
     link_max = link_amount()
 
     # construct url collection
-    img_urls = get_img_urls(link_max, number_results, thumbnail_results, driver)
+    results_start = 0
+    img_urls = get_img_urls(link_max, number_results, thumbnail_results, results_start, driver)
 
     # ask user to continue
-    urls_set = get_more_urls(img_urls, number_results, thumbnail_results, driver)
+    results_start = len(img_urls)
+    urls_set = get_more_urls(img_urls, number_results, thumbnail_results, results_start, driver)
 
-    # download files
+    return urls_set
 
 
-
-def get_more_urls(urls, num_results, thumb_results, wd):
+def get_more_urls(urls, num_results, thumb_results, results_start, wd):
     answer = None
     while answer not in ('yes', 'no'):
         answer = input('Save more thumbnails? Yes or No ')
         if answer.lower() == 'yes':
             link_max = link_amount()
-            expanded_urls = urls.add(get_img_urls(link_max, num_results, thumb_results, wd))
+            expanded_urls = urls.union(
+                get_img_urls(link_max, num_results, thumb_results, results_start, wd))
             return expanded_urls
         elif answer.lower() == 'no':
             return urls
@@ -54,10 +57,9 @@ def get_more_urls(urls, num_results, thumb_results, wd):
             print('Please enter yes or no')
 
 
-def get_img_urls(links, num_results, thumb_results, wd):
+def get_img_urls(links, num_results, thumb_results, results_start, wd):
     image_urls = set()
     image_count = 0
-    results_start = 0
 
     while image_count < links:
         scroll_to_end(wd)
