@@ -34,12 +34,24 @@ def main():
     img_urls = get_img_urls(link_max, number_results, thumbnail_results, driver)
 
     # ask user to continue
-    expand_url_set(img_urls)
+    urls_set = get_more_urls(img_urls, number_results, thumbnail_results, driver)
+
+    # download files
 
 
-def expand_url_set(urls):
-    if bool(input('Save more thumbnails? ')):
-        link_max = link_amount()
+
+def get_more_urls(urls, num_results, thumb_results, wd):
+    answer = None
+    while answer not in ('yes', 'no'):
+        answer = input('Save more thumbnails? Yes or No ')
+        if answer.lower() == 'yes':
+            link_max = link_amount()
+            expanded_urls = urls.add(get_img_urls(link_max, num_results, thumb_results, wd))
+            return expanded_urls
+        elif answer.lower() == 'no':
+            return urls
+        else:
+            print('Please enter yes or no')
 
 
 def get_img_urls(links, num_results, thumb_results, wd):
