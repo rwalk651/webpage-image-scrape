@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from download_images import *
 import time
 
-sleep_between_interactions: int = 4
+sleep_between_interactions: int = 1
 
 
 def main():
@@ -37,12 +37,12 @@ def main():
 
     # ask user to continue
     results_start = len(img_urls)
-    urls_set = get_more_urls(img_urls, number_results, thumbnail_results, results_start, driver)
+    urls_set = add_more_urls(img_urls, number_results, thumbnail_results, results_start, driver)
 
     return urls_set
 
 
-def get_more_urls(urls, num_results, thumb_results, results_start, wd):
+def add_more_urls(urls, num_results, thumb_results, results_start, wd):
     answer = None
     while answer not in ('yes', 'no'):
         answer = input('Save more thumbnails? Yes or No ')
@@ -71,6 +71,7 @@ def get_img_urls(links, num_results, thumb_results, results_start, wd):
             add_img(images, image_urls)
 
             image_count = len(image_urls)
+            print(image_count)
 
             if len(image_urls) >= links:
                 print(f'Found {len(image_urls)} image links, done.')
@@ -95,7 +96,7 @@ def add_img(images, urls):
         # extract image urls and add to set
         if img.get_attribute('href') and 'http' in img.get_attribute('href'):
             urls.add(img.get_attribute('href'))
-            print(img.get_attribute('href'))
+            # print(img.get_attribute('href'))
             return urls
 
 
@@ -104,20 +105,29 @@ def click_thumbnail(thumb, wd):
     try:
         wd.execute_script('arguments[0].click();', thumb)
         time.sleep(sleep_between_interactions)
-    except Exception:
-        print('unable to click')
+        images = choose_size(wd)
+        return images
+    except Exception as e:
+        print(f'unable to click - {e}')
         time.sleep(sleep_between_interactions)
         return
 
+
+def choose_size(wd):
     # select image size - either 1920x1080 or 1920 by any size
-    if wd.find_element(By.LINK_TEXT, '1920x1080'):
+    try:
+        wd.find_element(By.LINK_TEXT, '1920x1080')
         images = wd.find_elements(By.LINK_TEXT, '1920x1080')
         return images
-    elif wd.find_element(By.PARTIAL_LINK_TEXT, '1920'):
+    except Exception as e:
+        print(f'No Element {e}')
+
+    try:
+        wd.find_element(By.PARTIAL_LINK_TEXT, '1920')
         images = wd.find_elements(By.PARTIAL_LINK_TEXT, '1920')
         return images
-    else:
-        print('No Element')
+    except Exception as e:
+        print(f'No Element {e}')
         return
 
 
