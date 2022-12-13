@@ -18,7 +18,7 @@ choice = int(input('1 for ESO, 2 for Unsplash: '))
 
 def main(website):
     if website == 1:
-        eso.get_image_urls()
+        eso.main()
     else:
         splash.main()
 
