@@ -7,7 +7,7 @@ import requests
 
 
 def download_images(website, url, count):
-    p = Path('C:/Users/Perseus/Pictures/Saved Pictures/image_scrape')
+    p = Path(r'C:\Users\rwalk\Pictures\image_scrape')
     if not p.exists():
         p.mkdir(parents=True, exist_ok=True)
 
